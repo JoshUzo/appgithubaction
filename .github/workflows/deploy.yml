@@ -51,7 +51,7 @@ jobs:
           cd package && zip -r ../lambda_function.zip .
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: lambda-package
           path: lambda_function.zip
