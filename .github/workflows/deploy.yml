@@ -22,7 +22,10 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run Tests
-        run: pytest tests/
+        run: |
+          export PYTHONPATH=src:$PYTHONPATH  # Add src to the Python path
+          pytest tests/
+
 
   build:
     name: Package Lambda Function
