@@ -1,0 +1,4 @@
+boto3
+pandas
+requests
+pytest  # Only needed for testing
