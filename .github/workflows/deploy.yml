@@ -3,7 +3,7 @@ name: CI/CD Pipeline for AWS Lambda ETL
 on:
   push:
     branches:
-      - main  # Runs on push to the main branch
+      - main  # Runs when changes are pushed to the main branch
 
 jobs:
   test:
@@ -57,10 +57,30 @@ jobs:
           name: lambda-package
           path: .
 
-      - name: Deploy to AWS Lambda
-        uses: aws-actions/aws-cli-action@v1
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
-          command: aws lambda update-function-code --function-name MyETLFunction --zip-file fileb://lambda_function.zip
+
+      - name: Create AWS Lambda Function (If Not Exists)
+        run: |
+          FUNCTION_EXISTS=$(aws lambda get-function --function-name MyETLFunction --query 'Configuration.FunctionName' --output text || echo "FunctionNotFound")
+          if [[ "$FUNCTION_EXISTS" == "FunctionNotFound" ]]; then
+            echo "Lambda function does not exist. Creating..."
+            aws lambda create-function \
+              --function-name MyETLFunction \
+              --runtime python3.9 \
+              --role arn:aws:iam::YOUR_ACCOUNT_ID:role/YOUR_LAMBDA_ROLE \
+              --handler lambda_function.lambda_handler \
+              --timeout 30 \
+              --memory-size 256 \
+              --zip-file fileb://lambda_function.zip
+          else
+            echo "Lambda function exists. Proceeding to update."
+          fi
+
+      - name: Deploy Code to AWS Lambda
+        run: |
+          aws lambda update-function-code --function-name MyETLFunction --zip-file fileb://lambda_function.zip
