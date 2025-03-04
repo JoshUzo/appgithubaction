@@ -67,6 +67,9 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      - name: Verify AWS Credentials
+        run: |
+          aws sts get-caller-identity  # Verifies if AWS credentials are configured correctly.
 
       - name: Create AWS Lambda Function (If Not Exists)
         run: |
