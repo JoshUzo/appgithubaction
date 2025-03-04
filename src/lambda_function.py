@@ -18,7 +18,7 @@ def lambda_handler(event, context):
 
     # Load
     s3 = boto3.client("s3")
-    bucket_name = "my-etl-bucket"
+    bucket_name = "my-etl-bucket848"
     filename = "transformed_data.json"
     s3.put_object(Bucket=bucket_name, Key=filename, Body=df.to_json(orient="records"))
 
